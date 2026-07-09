@@ -60,8 +60,8 @@ assign the data files to data.tables
 
 ```{r Excel to CSV, results = 'hide'}
 library(readxl)
-#df <- read_excel("Quantium/QVI_transaction_data.xlsx")
-#write.csv(df, "Quantium/QVI_transaction_data.csv", row.names = FALSE)
+df <- read_excel("Quantium/QVI_transaction_data.xlsx")
+write.csv(df, "Quantium/QVI_transaction_data.csv", row.names = FALSE)
 ```
 
 
