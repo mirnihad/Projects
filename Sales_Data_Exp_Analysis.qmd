@@ -1,5 +1,5 @@
 ---
-title: "Quantium Virtual Internship - Retail Strategy and Analytics - Task 1"
+title: "Retail Strategy and Analytics"
 format:
   pdf:
     mainfont: "Roboto"
@@ -13,12 +13,12 @@ header-includes:
   - \DefineVerbatimEnvironment{Highlighting}{Verbatim}{breaklines,commandchars=\\\{\}}
 ---
 ```{r setup, include=FALSE}
-# set options for R markdown knitting
+# setting options for R markdown knitting
 knitr::opts_chunk$set(echo = TRUE)
 knitr::opts_chunk$set(linewidth=80)
 ```
 ```{r knitr line wrap setup, include=FALSE}
-# set up line wrapping in MD knit output
+# setting up line wrapping in MD knit output
 library(knitr)
 hook_output = knit_hooks$get("output")
 knit_hooks$set(output = function(x, options)
@@ -35,17 +35,7 @@ knit_hooks$set(output = function(x, options)
  hook_output(x, options)
 })
 ```
-# Solution template for Task 1
-This file is a solution template for the Task 1 of the Quantium Virtual Internship.
-It will walk you through the analysis, providing the scaffolding for your solution
-with gaps left for you to fill in yourself.
 
-Look for comments that say "over to you" for places where you need to add your own
-code!
-Often, there will be hints about what to do or what function to use in the text
-leading up to a code block - if you need a bit of extra help on how to use a
-function, the internet has many excellent resources on R coding, which you can find
-using your favourite search engine.
 ## Load required libraries and datasets
 Note that you will need to install these libraries if you have never used these
 before.
@@ -67,8 +57,6 @@ library(readr)
 ```
 Point the filePath to where you have downloaded the datasets to and
 assign the data files to data.tables
-over to you! fill in the path to your working directory. If you are on a Windows
-machine, you will need to use forward slashes (/) instead of backshashes (\)
 
 ```{r Excel to CSV, results = 'hide'}
 library(readxl)
@@ -121,7 +109,6 @@ As we are only interested in words that will tell us if the product is chips or
 not, let's remove all words with digits and special characters such as '&' from our
 set of product words. We can do this using `grepl()`.
 ```{r}
-# Over to you! Remove digits, and special characters, and then sort the distinct words by frequency of occurrence.
 #### Removing digits
 productWords <- productWords[!grepl("[0-9]", words)]
 #### Removing special characters
@@ -129,7 +116,7 @@ productWords <- productWords[!grepl("[&]", words)]
 #### Let's look at the most common words by counting the number of times a word appears and sorting them by this frequency in order of highest to lowest frequency
 productWords[, .N, words][order(-N)]
 ```
-There are salsa products in the dataset but we are only interested in the chips
+There are salsa products in the dataset, but we are only interested in the chips
 category, so let's remove these.
 ```{r}
 #### Remove salsa products
@@ -213,7 +200,6 @@ start with pack size.
 #### Pack size
 #### We can work this out by taking the digits that are in PROD_NAME
 transactionData[, PACK_SIZE := parse_number(PROD_NAME)]
-#### Always check your output
 #### Let's check if the pack sizes look sensible
 transactionData[, .N, PACK_SIZE][order(PACK_SIZE)]
 ```
@@ -223,7 +209,7 @@ The largest size is 380g and the smallest size is 70g - seems sensible!
 hist(transactionData$PACK_SIZE, breaks = seq(0, 400, by = 10), main = "Distribution of pack sizes", xlab = "Pack size (g)", ylab = "Frequency")
 ```
 Pack sizes created look reasonable.
-Now to create brands, we can use the first word in PROD_NAME to work out the brand name...
+Now to create brands, we can use the first word in PROD_NAME to work out the brand name.
 ```{r Create brand name}
 #### Brands
 transactionData[, BRAND := tstrsplit(PROD_NAME, " ")[[1]]]
@@ -262,8 +248,7 @@ filter(data,is.na(data$LIFESTAGE) | is.na(data$PREMIUM_CUSTOMER))
 ```
 Great, there are no nulls! So all our customers in the transaction data has been
 accounted for in the customer dataset.
-Note that if you are continuing with Task 2, you may want to retain this dataset
-which you can write out as a csv
+
 ```{r Code to save dataset as a csv}
 fwrite(data, paste0(filePath,"QVI_data.csv"))
 ```
@@ -276,7 +261,7 @@ how premium their general purchasing behaviour is
 - How many customers are in each segment
 - How many chips are bought per customer by segment
 - What's the average chip price by customer segment
-We could also ask our data team for more information. Examples are:
+We could also ask our data for more information. Examples are:
 - The customer's total spend over the period and total spend for each transaction
 to understand what proportion of their grocery spend is on chips
 - Proportion of customers in each customer segment overall to compare against the
@@ -339,7 +324,7 @@ This is also supported by there being fewer premium midage and young singles and
 couples buying chips compared to their mainstream counterparts.
 As the difference in average price per unit isn't large, we can check if this difference is statistically different.
 ```{r}
-#### Perform an independent t-test between mainstream vs premium and budget midage and 
+#### Perform an independent t-test between mainstream vs premium and budget midage and young singles/couples
 Mainstream= data[LIFESTAGE %in% c("YOUNG SINGLES/COUPLES", "MIDAGE SINGLES/COUPLES") & PREMIUM_CUSTOMER == "Mainstream", TOT_SALES/PROD_QTY]
 
 Premium_Budget = data[LIFESTAGE %in% c("YOUNG SINGLES/COUPLES", "MIDAGE SINGLES/COUPLES") & PREMIUM_CUSTOMER %in% c("Budget", "Premium"), TOT_SALES/PROD_QTY]
@@ -347,7 +332,7 @@ Premium_Budget = data[LIFESTAGE %in% c("YOUNG SINGLES/COUPLES", "MIDAGE SINGLES/
 t.test(Mainstream, Premium_Budget)
 
 ```
-The t-test results in a p-value of XXXXXXX, i.e. the unit price for mainstream, young and mid-age singles and couples [ARE] significantly higher than that of budget or premium, young and midage singles and couples.
+The t-test results in a p-value of 2.2e-16, i.e. the unit price for mainstream, young and mid-age singles and couples ARE significantly higher than that of budget or premium, young and midage singles and couples.
 ## Deep dive into specific customer segments for insights
 We have found quite a few interesting insights that we can dive deeper into.
 We might want to target customer segments that contribute the most to sales to
@@ -363,7 +348,7 @@ ggplot(Brand_for_young_singles_couples, aes(x = BRAND, y = N)) +
  labs(x = "Brand", y = "Number of transactions", title = "Preferred brands for mainstream young singles/couples") +
  theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
-Work out of there are brands that these two customer segments prefer more than others. You could use a technique called affinity analysis or a-priori analysis (or any other method if you prefer)
+Working out of there are brands that these two customer segments prefer more than others. We could use a technique called affinity analysis.
 
 ```{r fig.align = "center"}
 
@@ -405,7 +390,5 @@ ggplot(affinity_pack_size, aes(x = as.factor(PACK_SIZE), y = affinity_index)) +
  geom_bar(stat = "identity") +
  labs(x = "Pack size (g)", y = "Affinity Index", title = "Pack size affinity for mainstream young and mid-age singles/couples") +
  theme(axis.text.x = element_text(angle = 45, hjust = 1))
-
-# Over to you! Do the same for pack size.
 ```
 In addition to brand names, target customers have great pack size preferences, such as 270, 330, 380, 210, 250 g. However, there are also other pack sizes that are preferred by the target segment, such as 110, 134, 135 g. The client can use this information to stock up on these pack sizes to meet the demand of their target customers. For those pack sizes referred above the affinity index is more than 1 that of the rest population.
